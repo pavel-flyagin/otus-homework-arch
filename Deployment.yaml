@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: otus-homework-api
+spec:
+    replicas: 3
+    selector:
+       matchLabels:
+          app: otus-homework-api
+    template:
+       metadata:
+          labels:
+             app: otus-homework-api
+       spec:
+          containers:
+          - name: otus-homework-api
+            image: pavelflyagin/otus-homework-api:1.1.1
+            ports:
+              - name: web
+                containerPort: 80
+            resources:
+                 limits:
+                    cpu: 100m
+                    memory: 500Mi
+            readinessProbe:
+              httpGet:
+                port: web
+                path: /health
+              initialDelaySeconds: 10
+              periodSeconds: 5
+

@@ -1,0 +1,58 @@
+{
+	"info": {
+		"_postman_id": "a5616eaf-f457-4405-bb1b-42f8fb899b03",
+		"name": "Otus-homework",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "FirstHomework",
+			"item": [
+				{
+					"name": "http://arch.homework/otusapp/pavel-flyagin/health",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b98586ff-7c4d-43fa-a686-6b1cbf839fc2",
+								"exec": [
+									"pm.test(\"should_have_status_200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"should_have_body\", function () {\r",
+									"    pm.response.to.have.jsonBody({\"status\": \"OK\"});\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://arch.homework/otusapp/pavel-flyagin/health",
+							"protocol": "http",
+							"host": [
+								"arch",
+								"homework"
+							],
+							"path": [
+								"otusapp",
+								"pavel-flyagin",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
