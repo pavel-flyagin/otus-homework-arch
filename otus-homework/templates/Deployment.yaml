@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "otus-homework.fullname" . }}
+  labels:
+    {{- include "otus-homework.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "otus-homework.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      name: {{ include "otus-homework.fullname" . }}
+      labels:
+        {{- include "otus-homework.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "pavelflyagin/otus-homework-api:{{ .Chart.AppVersion }}"
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "otus-homework.fullname" . }}
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "otus-homework.fullname" . }}
+                  key: postgres_password
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "otus-homework.fullname" . }}
+                  key: postgres_db
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "otus-homework.fullname" . }}
+                  key: postgres_host
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "otus-homework.fullname" . }}
+                  key: postgres_port
+          ports:
+              - name: web
+                containerPort: 80
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              port: web
+              path: /health
+            initialDelaySeconds: 10
+            periodSeconds: 5
+

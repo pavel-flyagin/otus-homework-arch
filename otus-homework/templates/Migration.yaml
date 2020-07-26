@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "otus-homework.fullname" . }}-migration"
+  labels:
+    {{- include "otus-homework.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      name: "{{ include "otus-homework.fullname" . }}-migration"
+      labels:
+        {{- include "otus-homework.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: {{ .Release.Name }}
+          image: postgres:latest
+          env:
+            - name: PGHOST
+              valueFrom:
+                  configMapKeyRef:
+                    name: "{{ include "otus-homework.fullname" . }}-migration"
+                    key: postgres_host
+            - name: PGPORT
+              valueFrom:
+                  configMapKeyRef:
+                    name: "{{ include "otus-homework.fullname" . }}-migration"
+                    key: postgres_port
+            - name: PGDATABASE
+              valueFrom:
+                  configMapKeyRef:
+                    name: "{{ include "otus-homework.fullname" . }}-migration"
+                    key: postgres_db
+            - name: PGUSER
+              valueFrom:
+                  configMapKeyRef:
+                    name: "{{ include "otus-homework.fullname" . }}-migration"
+                    key: postgres_user
+            - name: PGPASSWORD
+              valueFrom:
+                  secretKeyRef:
+                    name: "{{ include "otus-homework.fullname" . }}-migration"
+                    key: postgres_password
+          volumeMounts:
+            - mountPath: /config
+              name: config-volume
+          command:
+            - sh
+            - "-c"
+            - psql -f config/migrationFile.sql
+      volumes:
+        - name: config-volume
+          configMap:
+              name: "{{ include "otus-homework.fullname" . }}-migration"
+              items:
+                - key: migration_code
+                  path: migrationFile.sql
+  backoffLimit: 1

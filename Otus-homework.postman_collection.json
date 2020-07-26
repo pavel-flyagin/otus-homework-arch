@@ -6,52 +6,299 @@
 	},
 	"item": [
 		{
-			"name": "FirstHomework",
-			"item": [
+			"name": "Get health",
+			"event": [
 				{
-					"name": "http://arch.homework/otusapp/pavel-flyagin/health",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "b98586ff-7c4d-43fa-a686-6b1cbf839fc2",
-								"exec": [
-									"pm.test(\"should_have_status_200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"should_have_body\", function () {\r",
-									"    pm.response.to.have.jsonBody({\"status\": \"OK\"});\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {}
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://arch.homework/otusapp/pavel-flyagin/health",
-							"protocol": "http",
-							"host": [
-								"arch",
-								"homework"
-							],
-							"path": [
-								"otusapp",
-								"pavel-flyagin",
-								"health"
-							]
-						}
-					},
-					"response": []
+					"listen": "test",
+					"script": {
+						"id": "b98586ff-7c4d-43fa-a686-6b1cbf839fc2",
+						"exec": [
+							"pm.test(\"should_have_status_200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"should_have_body\", function () {\r",
+							"    pm.response.to.have.jsonBody({\"status\": \"OK\"});\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
-			"protocolProfileBehavior": {}
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/health",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "507199e4-c677-4bf6-8eb0-b0856199222f",
+						"exec": [
+							"\r",
+							"pm.test(\"should return 201 status code\", ()=>{\r",
+							"    pm.response.to.have.status(201);\r",
+							"})\r",
+							"\r",
+							"pm.test(\"should return newly created user\", ()=>{\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.all.keys([\"id\",\"name\", \"email\"]);\r",
+							"    \r",
+							"    pm.expect(jsonData.id).to.not.eql(null);\r",
+							"    pm.expect(jsonData.name).to.eql(\"pavel\");\r",
+							"    pm.expect(jsonData.email).to.eql(\"email@mail.ru\");\r",
+							"})\r",
+							"\r",
+							"pm.test(\"should have location header\", ()=>{\r",
+							"    var jsonData = pm.response.json();\r",
+							"   \r",
+							"    pm.response.to.be.header(\"Location\", pm.collectionVariables.get(\"baseUrl\") +\"/users/\" + jsonData.id);\r",
+							"})\r",
+							"\r",
+							"pm.globals.set(\"userId\", pm.response.json().id);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"pavel\",\r\n    \"email\": \"email@mail.ru\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user with no body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e7fc6ab8-b449-470e-bf8c-4e3011ffe8c6",
+						"exec": [
+							"\r",
+							"pm.test(\"should return 201 status code\", ()=>{\r",
+							"    pm.response.to.have.status(201)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"should return newly created user\", ()=>{\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.all.keys([\"id\",\"name\", \"email\"]);\r",
+							"    \r",
+							"    pm.expect(jsonData.id).to.not.eql(null);\r",
+							"    pm.expect(jsonData.name).to.eql(jsonData.id);\r",
+							"    pm.expect(jsonData.email).to.eql(null);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7ae4d7fb-9069-4035-9c7f-b3f1a8aa082e",
+						"exec": [
+							"pm.test(\"should return 200 status code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"should have body with previously stored json\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"userId\"));\r",
+							"    pm.expect(jsonData.name).to.eql(\"pavel\");\r",
+							"    pm.expect(jsonData.email).to.eql(\"email@mail.ru\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/{{userId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "507199e4-c677-4bf6-8eb0-b0856199222f",
+						"exec": [
+							"\r",
+							"pm.test(\"should return 200 status code\", ()=>{\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/{{userId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find unexisting user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c3f9a78f-ba1f-458a-b29b-648ce5b2bb97",
+						"exec": [
+							"pm.test(\"should return 404 status code\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/{{$guid}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"{{$guid}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "06d93626-b8de-45d1-969a-3cb217c64168",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "8de2e8d2-5dd2-4886-9e35-5701e37bbf95",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "e154957a-0221-40b8-aeff-ed4eb2f6ca05",
+			"key": "baseUrl",
+			"value": ""
 		}
 	],
 	"protocolProfileBehavior": {}
